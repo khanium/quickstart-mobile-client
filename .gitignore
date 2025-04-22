@@ -32,3 +32,11 @@ gradle/
 build/
 target/
 
+.gradle
+.gradle/
+.gradle/*
+.idea
+.idea/
+.idea/*
+
+
