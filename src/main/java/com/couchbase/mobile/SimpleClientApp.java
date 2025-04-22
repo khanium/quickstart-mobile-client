@@ -56,15 +56,19 @@ public class SimpleClientApp {
 
             if(change.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.IDLE) || change.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED)){
                 printCount(database);
-                if (replicator.getConfig().isContinuous() && change.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED)) {
+                if (change.getReplicator().getConfig().isContinuous() && change.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED)) {
                     System.err.println("Replication stopped unexpectedly!");
-                    System.err.println("Exiting...");
-                    System.exit(0);
+                    exitApp(); // TODO instead exiting to handle replication exception here. I.e: retry to start the replication `change.getReplicator().start();` with a maximum number of retry...
                 }
             }
         });
 
         replicator.start();
+    }
+
+    private static void exitApp(){
+        System.err.println("Exiting...");
+        System.exit(0);
     }
 
     private static void printCount(Database database) {

@@ -19,15 +19,15 @@ couchbase:
       timeout: 10000
       heartbeat: 15000
     collections:
-      _default:
+      # _default:
+      #  documentIDs-filter:
+      #  channels-filter:
+      typeA:
         documentIDs-filter:
         channels-filter:
-      #       typeA:
-      #         documentIDs-filter:
-      #         channels-filter:
-      #       typeB:
-      #         documentIDs-filter:
-      #         channels-filter:
+      typeB:
+        documentIDs-filter:
+        channels-filter:
     authenticator:
       username: userdb1
       password: Password1!
@@ -37,10 +37,10 @@ couchbase:
     flush-previous-db: true
     auto-purge: true
     scope:
-    #  name: custom
-    #  collections: typeA,typeB
-       name: _default
-       collections: _default
+       name: custom
+       collections: typeA,typeB
+    #   name: _default
+    #   collections: _default
   log:
     path: logs
     level: debug

@@ -45,6 +45,7 @@ public class ClientLite {
     @PostConstruct
     private void init() {
         // Adding a change listener to the replicator to print the status of the replication
+        //TODO add your own implementation of the StatusChangeListener & handle the replication error status
         this.replicator.addChangeListener(new StatusChangeListener(this));
     }
 
