@@ -1,0 +1,3 @@
+[submodule "quickstart-environment"]
+	path = quickstart-environment
+	url = https://github.com/khanium/quickstart-sync-gateway
