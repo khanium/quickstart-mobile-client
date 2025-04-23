@@ -245,8 +245,55 @@ SimpleClientApp.java
 ```
 
 #### Simple
+In this main, you can find a simple example of how to create a simple mobile client with a replicator to sync with the Sync Gateway from a property file values. 
 
-TBD
+#### Application.yaml properties
+
+```yaml
+
+couchbase:
+  remote:
+    endpoint-url: ws://127.0.0.1:4984/db
+    # endpoint-url: wss://ecfyee1wi6dvwova.apps.cloud.couchbase.com:4984/db
+    # certificate-path: assets/cert.pem
+    continuous: true
+    replicator-type: PUSH_AND_PULL
+    reset-checkpoint: false
+    websocket:
+      timeout: 10000
+      heartbeat: 15000
+    collections:
+      # _default:
+      #  documentIDs-filter:
+      #  channels-filter:
+      typeA:
+        documentIDs-filter:
+        channels-filter:
+      typeB:
+        documentIDs-filter:
+        channels-filter:
+    authenticator:
+      username: userdb1
+      password: Password1!
+  local:
+    database: db
+    db-path: data
+    flush-previous-db: true
+    auto-purge: true
+    scope:
+      name: custom
+      collections: typeA,typeB
+    #   name: _default
+    #   collections: _default
+  log:
+    path: logs
+    level: debug
+    max-size: 100000000
+    rotation-count: 10
+    plaintext: true
+```
+
+
 
 ## Config Server Environment Deployment
 
