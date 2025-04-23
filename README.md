@@ -244,7 +244,7 @@ SimpleClientApp.java
     }
 ```
 
-#### Simple
+#### Simple Application and Command Line Menu
 In this main, you can find a simple example of how to create a simple mobile client with a replicator to sync with the Sync Gateway from a property file values.
 
 On top, a command line action menu to create a document, update it, delete it, and list all documents in the local database.
