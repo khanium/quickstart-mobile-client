@@ -245,10 +245,26 @@ SimpleClientApp.java
 ```
 
 #### Simple
-In this main, you can find a simple example of how to create a simple mobile client with a replicator to sync with the Sync Gateway from a property file values. 
+In this main, you can find a simple example of how to create a simple mobile client with a replicator to sync with the Sync Gateway from a property file values.
+
+On top, a command line action menu to create a document, update it, delete it, and list all documents in the local database.
+
+```console
+                ** *************************************** **
+                ** Menu:
+                  0. change working `{}` collection
+                  1. Create documents
+                  2. Update doc channel
+                  3. List `{}` documents
+                  4. List All documents
+                  5. Count documents in the local database
+                  6. Exit
+                 - please, choose one option number:
+``` 
 
 #### Application.yaml properties
 
+*resources/application.yaml*
 ```yaml
 
 couchbase:
@@ -292,6 +308,22 @@ couchbase:
     rotation-count: 10
     plaintext: true
 ```
+
+Properties files are defined in the `src/main/resources` folder. You can define your own properties file and pass it as a command line argument to the application. This file contains the following structure:
+
+```yaml
+couchbase:
+  remote: 
+    # set the remote database properties (endpoint-url, certificate-path, collections, etc) for syncing
+  local:
+    # set the local database properties (path, name, scope, collections, etc)
+    # note: the collections should contain all collections defined in the replicator collections properties
+  log:
+    # set the logs properties (path, level to debug,etc)
+```
+
+In this terminology, **remote database** is the Couchbase Server / Sync Gateway and **local database** is the Couchbase Lite device database.
+
 
 
 
