@@ -27,10 +27,12 @@ This will initialize and update the [quickstart-sync-gateway](quickstart-environ
 
 ```console
 cd quickstart-environment
-docker-compose up -d
+docker compose build --no-cache 
+docker compose up -d
 ```
+Note: docker compose build --no-cache is only required if you change the dockerfile or the docker-compose.yml file. Otherwise, you can just run `docker compose up -d` to start the environment. 
 
-This will deploy a local environment with: 
+`docker compose up -d` will deploy a local environment with: 
 * **Couchbase Server 7.6.5** - [localhost:8091](http://localhost:8091)
   * Users: [ `Administrator`, `sync_gateway`, `metrics_user` ]
   * Buckets: 
