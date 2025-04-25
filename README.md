@@ -253,16 +253,18 @@ On top, a command line action menu to create a document, update it, delete it, a
 
 *ActionMenu.java*
 ```console
-                ** *************************************** **
-                ** Menu:
-                  0. change working `{}` collection
-                  1. Create documents
-                  2. Update doc channel
-                  3. List `{}` documents
-                  4. List All documents
-                  5. Count documents in the local database
-                  6. Exit
-                 - please, choose one option number:
+ ** *************************************** **
+ ** Menu:
+   0. change working default `custom.typeB` collection
+   1. Create documents
+   2. Update doc channel
+   3. List `custom.typeB` documents
+   4. List All documents
+   5. Count documents in the local database
+   6. Custom Use Cases
+   7. Start/Stop Replication
+   8. Exit
+  - please, choose one option number: 
 ``` 
 
 #### Application.yaml properties

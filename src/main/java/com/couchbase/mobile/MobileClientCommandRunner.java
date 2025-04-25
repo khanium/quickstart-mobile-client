@@ -1,8 +1,7 @@
 package com.couchbase.mobile;
 
-import com.couchbase.lite.ReplicatorActivityLevel;
 import com.couchbase.mobile.client.ClientLite;
-import com.couchbase.mobile.menu.ActionMenu;
+import com.couchbase.mobile.menu.MainMenu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ public class MobileClientCommandRunner implements CommandLineRunner {
     public MobileClientCommandRunner(ClientLite client) {
         // Constructor
         this.client = client;
-        this.backgroundMenu = new Thread(new ActionMenu(client));
+        this.backgroundMenu = new Thread(new MainMenu(client));
     }
 
     private void welcome() {
