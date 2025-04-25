@@ -5,6 +5,7 @@ import com.couchbase.mobile.config.CouchbaseLiteProperties;
 import com.couchbase.mobile.listeners.StatusChangeListener;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -72,4 +73,20 @@ public class ClientLite {
         }
     }
 
+    @SneakyThrows
+    public Collection getCollection(String name) {
+        return this.database.getCollection(name, properties.getLocal().getScope().getName());
+    }
+
+    public boolean isStarted() {
+        return replicator != null && !replicator.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED);
+    }
+
+    public void stop(){
+        if (replicator != null) {
+            replicator.stop();
+        } else {
+            log.error("Replicator is null");
+        }
+    }
 }

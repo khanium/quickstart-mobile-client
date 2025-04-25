@@ -28,19 +28,19 @@ public class MobileClientCommandRunner implements CommandLineRunner {
         log.info("Starting the client...");
     }
 
-    private void showMenuAfterSyncedFirstTime(){
+    private void showMenu(){
         client.getReplicator().addChangeListener(change -> {
-            if (!change.getReplicator().isClosed() && !backgroundMenu.isAlive() && change.getStatus().getActivityLevel().equals(IDLE) || change.getStatus().getActivityLevel().equals(STOPPED)) {
+            if (!change.getReplicator().isClosed() && backgroundMenu.isAlive() && (change.getStatus().getActivityLevel().equals(IDLE) || change.getStatus().getActivityLevel().equals(STOPPED))) {
                 log.info("Replication completed successfully.");
-                backgroundMenu.start();
+                //TODO add triggered event here to awake the menu in case it is waiting for the replication to finish
             }
         });
-        client.start(); // starting the replicator to sync the initial dataset or pending changes
+        backgroundMenu.start();
     }
 
     @Override
     public void run(String... args) throws Exception {
         welcome();
-        showMenuAfterSyncedFirstTime();
+        showMenu();
     }
 }

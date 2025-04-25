@@ -7,6 +7,10 @@ spring:
     # Locale used for formatting
     time-zone: UTC
 
+logging:
+  pattern:
+    console: "%m%n"
+
 couchbase:
   remote:
     endpoint-url: ws://127.0.0.1:4984/db

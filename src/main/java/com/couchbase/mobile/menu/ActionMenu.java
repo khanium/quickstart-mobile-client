@@ -1,7 +1,9 @@
 package com.couchbase.mobile.menu;
 
 import com.couchbase.lite.*;
+import com.couchbase.lite.internal.replicator.ReplicationStatusChange;
 import com.couchbase.mobile.client.ClientLite;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -11,6 +13,9 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.couchbase.lite.ReplicatorActivityLevel.IDLE;
+import static com.couchbase.lite.ReplicatorActivityLevel.STOPPED;
 
 @Slf4j
 public class ActionMenu implements Runnable {
@@ -31,7 +36,9 @@ public class ActionMenu implements Runnable {
     public void show() {
         try (Scanner scanner = new Scanner(System.in);) {
             //Collection col = database.getCollection("typeA", "custom");
+            String defaultCollectionName;
             while (enabled.get()) {
+                defaultCollectionName = selectedCollection.getFullName();
                 log.info("""
                \s
                 ** *************************************** **
@@ -42,8 +49,9 @@ public class ActionMenu implements Runnable {
                   3. List `{}` documents
                   4. List All documents
                   5. Count documents in the local database
-                  6. Exit
-                 - please, choose one option number:\s""",selectedCollection.getFullName(),selectedCollection.getFullName());
+                  6. {} Replication
+                  7. Exit
+                 - please, choose one option number:\s""",defaultCollectionName,defaultCollectionName,(client.isStarted()? "Stop":"Start"));
                 int option = System.in.read();
                 scanner.nextLine(); // Consume newline
                 log.info("** *************************************** **");
@@ -51,7 +59,7 @@ public class ActionMenu implements Runnable {
                 switch (option) {
                     case '0':
                         log.info("Setting up new working collection...");
-                        actionSetupCollection();
+                        actionSetupCollection(scanner);
                         break;
                     case '1':
                         log.info("Creating documents in `{}` collection...", selectedCollection.getFullName());
@@ -76,6 +84,10 @@ public class ActionMenu implements Runnable {
                         actionCount();
                         break;
                     case '6':
+                        log.info("{} Replication...",client.isStarted()? "Stopping":"Starting");
+                        actionStartStopReplication();
+                        break;
+                    case '7':
                         log.info("Exiting...");
                         actionExit();
                         break;
@@ -92,9 +104,32 @@ public class ActionMenu implements Runnable {
         }
     }
 
-    private void actionSetupCollection() {
+    private void awaitUntil(ReplicatorActivityLevel status) {
+        //TODO via StatusChangeListener
+        while (client.getReplicator().getStatus().getActivityLevel().equals(status)) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.error("Error waiting for replication to stop: " + e.getMessage());
+            }
+        }
+    }
+
+    private void actionStartStopReplication() {
+        if(client.isStarted()) {
+            log.info("Stopping replication...");
+            client.stop();
+            awaitUntil(STOPPED);
+        }else {
+            log.info("Starting replication...");
+            client.start();
+            awaitUntil(IDLE);
+        }
+    }
+
+    private void actionSetupCollection(Scanner scanner) {
         log.info("Setting up new working collection...");
-        AtomicInteger index = new AtomicInteger(1);
+        AtomicInteger index = new AtomicInteger(0);
         final Map<Integer, Collection> collections = new HashMap<>();
         log.info(". Available collections:");
         client.getCollections().forEach(col -> {
@@ -105,35 +140,43 @@ public class ActionMenu implements Runnable {
             log.info(" {}. {}{}",index.incrementAndGet(), selected,col.getFullName());
             collections.put(index.get(), col);
         });
-        showSubMenuSetup(collections);
+        showSubMenuSetup(scanner, collections);
 
     }
 
-    private void showSubMenuSetup(Map<Integer, Collection> collections) {
-        try (Scanner scanner = new Scanner(System.in);) {
+
+    @SneakyThrows
+    private void showSubMenuSetup(Scanner scanner, Map<Integer, Collection> collections) {
             log.info(" - Type the collection number to set as working collection: ");
             int option = System.in.read();
+            int index = option - '0'; // extract the number from the char
             scanner.nextLine(); // Consume newline
             log.info("** *************************************** **");
             log.info("");
-            if(collections.containsKey(option)) {
-                selectedCollection = collections.get(option);
+            log.info(" SELECTED option = " + index);
+            Collection sel = collections.get(index);
+            if(sel!=null) {
+                selectedCollection = sel;
                 log.info(" - Working collection set to: " + selectedCollection.getFullName());
             } else {
                 log.info("No valid Option. Keeping the current working collection: " + selectedCollection.getFullName());
             }
-        } catch (IOException e) {
-            log.error("Error in the application: " + e.getMessage());
-        }
     }
 
     private void actionExit() {
-        enabled.set(false);
+
         client.close();
+        enabled.set(false);
+        try {
+            Thread.sleep(5000); // Give time to close the database
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.exit(0);
     }
 
     private void actionList(Collection collection) {
+        log.info("Found {} Documents in the `{}` collection: ", collection.getCount(), collection.getFullName());
         try (ResultSet rs = client.getDatabase().createQuery(FIND_ALL.formatted(collection.getFullName())).execute()) {
             rs.forEach(doc -> {
                 try {
