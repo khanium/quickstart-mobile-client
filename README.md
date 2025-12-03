@@ -15,7 +15,7 @@ Simple Mobile, Offline-first & edge-compunting quickstart tutorial using Java Co
 
 ### Build
 ```console
-git clone https://github.com/your-repo/quickstart-mobile-client.git
+git clone https://github.com/khanium/quickstart-mobile-client.git
 cd quickstart-mobile-client
 git submodule init
 git submodule update --remote --recursive
